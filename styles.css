@@ -314,6 +314,9 @@ body.nav-open .nav-toggle__close { display: block; }
   letter-spacing: -.035em;
   color: var(--navy-deep);
 }
+.hero__title .nowrap {
+  white-space: nowrap;
+}
 .hero__title .hl {
   position: relative;
   color: var(--navy);
