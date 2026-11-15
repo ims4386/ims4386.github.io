@@ -254,17 +254,26 @@
       timer = setTimeout(function () { controller.abort(); }, 20000);
     }
 
+    // JSON 본문은 CORS 사전요청(preflight)을 일으켜 FormSubmit의 Cloudflare 보호에 막힙니다.
+    // 폼 인코딩(UTF-8)으로 보내면 사전요청 없이 전송되고 한글도 그대로 전달됩니다.
+    var payload = buildPayload();
+    var body = new URLSearchParams();
+    Object.keys(payload).forEach(function (key) {
+      body.append(key, payload[key]);
+    });
+
     fetch(ENDPOINT, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-      body: JSON.stringify(buildPayload()),
+      headers: { 'Accept': 'application/json' },
+      body: body,
       signal: controller ? controller.signal : undefined
     }).then(function (res) {
       return res.text().then(function (text) {
+        if (!res.ok) throw new Error('HTTP ' + res.status);
         var data = null;
         try { data = JSON.parse(text); } catch (err) { data = null; }
-        if (!res.ok) throw new Error('HTTP ' + res.status);
-        if (data && String(data.success).toLowerCase() === 'false') {
+        if (!data) throw new Error('unexpected response');
+        if (String(data.success).toLowerCase() !== 'true') {
           throw new Error(data.message || 'rejected');
         }
         return data;
