@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  아이엠에스(IMS) 홈페이지 sitemap.xml
+  배포 주소: https://ims4386.github.io/
+  (한 페이지 사이트라 URL 은 1개입니다. lastmod 는 내용을 고칠 때마다 바꿔 주세요.)
+-->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://ims4386.github.io/</loc>
+    <lastmod>2026-11-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>1.0</priority>
+  </url>
+</urlset>
