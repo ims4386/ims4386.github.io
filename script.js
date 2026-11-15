@@ -138,13 +138,57 @@
     });
   });
 
-  /* ---------- 견적 문의 작성 ---------- */
+  /* ---------- 연도 ---------- */
+  var year = document.getElementById('year');
+  if (year) year.textContent = String(new Date().getFullYear());
+
+  /* ---------- 견적 문의 작성 · 전송 ---------- */
   var form = document.getElementById('quoteForm');
   if (!form) return;
+
+  var ENDPOINT = 'https://formsubmit.co/ajax/' + EMAIL;
+  var statusEl = document.getElementById('quoteStatus');
+  var submitBtn = document.getElementById('quoteSubmit');
+  var submitLabel = submitBtn ? submitBtn.querySelector('.btn__label') : null;
+  var actionsEl = form.querySelector('.quote-form__actions');
+  var whoField = document.getElementById('qWho');
+  var whoWrap = whoField ? whoField.closest('.field') : null;
+  var whoError = document.getElementById('qWhoError');
+  var isSending = false;
 
   function val(id) {
     var el = document.getElementById(id);
     return el ? String(el.value || '').trim() : '';
+  }
+
+  function setStatus(kind, message) {
+    if (!statusEl) return;
+    statusEl.classList.remove('is-busy', 'is-success', 'is-error');
+    statusEl.textContent = message || '';
+    if (message) statusEl.classList.add('is-' + kind);
+  }
+
+  function clearWhoError() {
+    if (!whoWrap) return;
+    whoWrap.classList.remove('has-error');
+    if (whoField) whoField.removeAttribute('aria-invalid');
+    if (whoError) whoError.hidden = true;
+  }
+
+  function showWhoError() {
+    if (!whoWrap || !whoField) return;
+    whoWrap.classList.add('has-error');
+    whoField.setAttribute('aria-invalid', 'true');
+    if (whoError) whoError.hidden = false;
+    whoField.focus();
+  }
+
+  function setBusy(busy) {
+    isSending = busy;
+    if (!submitBtn) return;
+    submitBtn.disabled = busy;
+    submitBtn.setAttribute('aria-busy', busy ? 'true' : 'false');
+    if (submitLabel) submitLabel.textContent = busy ? '접수 중…' : '웹에서 바로 보내기';
   }
 
   function buildBody() {
@@ -165,15 +209,92 @@
     return lines.join('\n');
   }
 
-  form.addEventListener('submit', function (e) {
-    e.preventDefault();
+  function buildPayload() {
+    var item = val('qItem') || '품목 미정';
+    return {
+      _subject: '[아이엠에스 홈페이지] 견적 문의 - ' + item,
+      _template: 'table',
+      _captcha: 'false',
+      _honey: '',
+      '품목': item,
+      '수량': val('qQty') || '-',
+      '규격/사이즈': val('qSize') || '-',
+      '희망 납기': val('qDue') || '-',
+      '담당자/연락처': val('qWho'),
+      '요청 사항': val('qMemo') || '-',
+      '접수 경로': '아이엠에스 홈페이지 견적 문의 폼'
+    };
+  }
+
+  function buildMailtoUrl() {
     var subject = '[아이엠에스] 인쇄 견적 문의 — ' + (val('qItem') || '품목 미정');
-    var url = 'mailto:' + EMAIL +
+    return 'mailto:' + EMAIL +
       '?subject=' + encodeURIComponent(subject) +
       '&body=' + encodeURIComponent(buildBody());
-    window.location.href = url;
-    toast('메일 앱으로 문의 내용을 전달했습니다.');
+  }
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    if (isSending) return;
+
+    if (!val('qWho')) {
+      showWhoError();
+      setStatus('error', '연락받으실 담당자와 연락처를 적어 주세요. 연락처가 있어야 견적을 안내드릴 수 있습니다.');
+      return;
+    }
+    clearWhoError();
+    setStatus('busy', '견적 문의를 접수하는 중입니다… 잠시만 기다려 주세요.');
+    setBusy(true);
+    if (actionsEl) actionsEl.classList.remove('is-hint');
+
+    var controller = null;
+    var timer = null;
+    if (typeof AbortController !== 'undefined') {
+      controller = new AbortController();
+      timer = setTimeout(function () { controller.abort(); }, 20000);
+    }
+
+    fetch(ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify(buildPayload()),
+      signal: controller ? controller.signal : undefined
+    }).then(function (res) {
+      return res.text().then(function (text) {
+        var data = null;
+        try { data = JSON.parse(text); } catch (err) { data = null; }
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        if (data && String(data.success).toLowerCase() === 'false') {
+          throw new Error(data.message || 'rejected');
+        }
+        return data;
+      });
+    }).then(function () {
+      if (timer) clearTimeout(timer);
+      setBusy(false);
+      setStatus('success', '견적 문의가 접수되었습니다. 확인 후 빠르게 연락드리겠습니다.');
+      toast('견적 문의가 접수되었습니다.');
+      form.reset();
+      clearWhoError();
+    }).catch(function (err) {
+      if (timer) clearTimeout(timer);
+      setBusy(false);
+      var timedOut = err && err.name === 'AbortError';
+      setStatus('error', timedOut
+        ? '연결이 지연되어 접수가 끝나지 않았습니다. 잠시 후 다시 시도하시거나, ‘이메일 앱으로’ 또는 ‘내용 복사’로 보내주세요.'
+        : '전송하지 못했습니다. 잠시 후 다시 시도하시거나, ‘이메일 앱으로’ 또는 ‘내용 복사’로 보내주세요.');
+      if (actionsEl) actionsEl.classList.add('is-hint');
+    });
   });
+
+  var mailQuote = document.getElementById('mailQuote');
+  if (mailQuote) {
+    mailQuote.addEventListener('click', function () {
+      if (val('qWho')) clearWhoError();
+      window.location.href = buildMailtoUrl();
+      toast('메일 앱을 엽니다. 디자인 파일을 첨부해 보내주세요.');
+    });
+  }
 
   var copyQuote = document.getElementById('copyQuote');
   if (copyQuote) {
@@ -186,7 +307,10 @@
     });
   }
 
-  /* ---------- 연도 ---------- */
-  var year = document.getElementById('year');
-  if (year) year.textContent = String(new Date().getFullYear());
+  if (whoField) whoField.addEventListener('input', clearWhoError);
+  form.addEventListener('input', function () {
+    if (!statusEl || !statusEl.classList.contains('is-error')) return;
+    setStatus('', '');
+    if (actionsEl) actionsEl.classList.remove('is-hint');
+  });
 })();

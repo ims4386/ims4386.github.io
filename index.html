@@ -337,7 +337,7 @@
 
         <article class="faq-item" data-reveal>
           <h3 class="faq-item__q"><span class="faq-item__mark">Q</span><span>견적을 문의할 때 무엇을 알려주면 되나요?</span></h3>
-          <p class="faq-item__a">품목(작업일보·카탈로그·라벨 등), 완성 크기와 페이지 수, 수량, 종이 재질, 후가공(코팅·제본 등), 필요한 납기일을 알려주시면 견적을 바로 낼 수 있습니다. 인쇄할 파일이 있으면 함께 보내주세요. 파일이 없어도 사양만 알려주시면 준비 방법을 안내드리고, 사이트의 견적 문의 양식에 적으시면 그 내용이 그대로 메일로 전달됩니다.</p>
+          <p class="faq-item__a">품목(작업일보·카탈로그·라벨 등), 완성 크기와 페이지 수, 수량, 종이 재질, 후가공(코팅·제본 등), 필요한 납기일을 알려주시면 견적을 바로 낼 수 있습니다. 인쇄할 파일이 있으면 함께 보내주세요. 파일이 없어도 사양만 알려주시면 준비 방법을 안내드리고, 사이트의 견적 문의 양식에 적어 바로 보내시면 그 내용이 그대로 접수됩니다.</p>
         </article>
       </div>
     </div>
@@ -420,12 +420,20 @@
         <!-- 견적 작성 -->
         <div class="quote-form" data-reveal>
           <h3 class="contact-card__title">견적 문의 내용 정리</h3>
-          <p class="quote-form__hint">아래에 적으신 내용이 그대로 메일 본문으로 전달됩니다. 보내기 전에 내용을 확인하고 복사해 두실 수도 있습니다.</p>
-          <form id="quoteForm" novalidate>
+          <p class="quote-form__hint">
+            <strong>‘웹에서 바로 보내기’</strong>를 누르면 페이지를 벗어나지 않고 바로 접수됩니다.
+            디자인 파일을 첨부해야 한다면 <strong>‘이메일 앱으로’</strong>, 복사해서 카톡·전화·팩스로 보내실 때는 <strong>‘내용 복사’</strong>를 이용하세요.
+          </p>
+          <form id="quoteForm" action="https://formsubmit.co/ims4386@daum.net" method="POST" novalidate>
+            <input class="hp-field" type="text" name="_honey" tabindex="-1" autocomplete="off" aria-hidden="true">
+            <input type="hidden" name="_template" value="table">
+            <input type="hidden" name="_captcha" value="false">
+            <input type="hidden" name="_next" value="https://ims4386.github.io/#contact">
+            <input type="hidden" name="_subject" id="qSubject" value="[아이엠에스 홈페이지] 견적 문의">
             <div class="field-row">
               <div class="field">
                 <label for="qItem">품목</label>
-                <select id="qItem" name="item">
+                <select id="qItem" name="품목">
                   <option>인쇄</option>
                   <option>출판</option>
                   <option>디지털출력</option>
@@ -441,35 +449,44 @@
               </div>
               <div class="field">
                 <label for="qQty">수량</label>
-                <input type="text" id="qQty" name="qty" placeholder="예: 500매">
+                <input type="text" id="qQty" name="수량" placeholder="예: 500매">
               </div>
             </div>
             <div class="field-row">
               <div class="field">
                 <label for="qSize">규격 / 사이즈</label>
-                <input type="text" id="qSize" name="size" placeholder="예: A4, 90×50mm">
+                <input type="text" id="qSize" name="규격·사이즈" placeholder="예: A4, 90×50mm">
               </div>
               <div class="field">
                 <label for="qDue">희망 납기</label>
-                <input type="text" id="qDue" name="due" placeholder="예: 11월 28일까지">
+                <input type="text" id="qDue" name="희망 납기" placeholder="예: 11월 28일까지">
               </div>
             </div>
             <div class="field">
-              <label for="qWho">담당자 / 연락처</label>
-              <input type="text" id="qWho" name="who" placeholder="예: 홍길동 / 010-0000-0000">
+              <label for="qWho">담당자 / 연락처 <span class="field__req">필수</span></label>
+              <input type="text" id="qWho" name="담당자·연락처" placeholder="예: 홍길동 / 010-0000-0000" autocomplete="name" required aria-required="true" aria-describedby="qWhoError">
+              <p class="field__error" id="qWhoError" hidden>연락받으실 담당자와 연락처를 적어 주세요.</p>
             </div>
             <div class="field">
               <label for="qMemo">요청 사항</label>
-              <textarea id="qMemo" name="memo" rows="3" placeholder="용도, 종이 재질, 후가공 등 추가로 알려주실 내용을 적어주세요."></textarea>
+              <textarea id="qMemo" name="요청 사항" rows="3" placeholder="용도, 종이 재질, 후가공 등 추가로 알려주실 내용을 적어주세요."></textarea>
             </div>
             <div class="quote-form__actions">
-              <button class="btn btn--primary" type="submit">
+              <button class="btn btn--primary" type="submit" id="quoteSubmit">
                 <svg class="icon" aria-hidden="true"><use href="#i-mail"></use></svg>
-                메일로 보내기
+                <span class="btn__label">웹에서 바로 보내기</span>
               </button>
-              <button class="btn btn--soft" type="button" id="copyQuote">내용 복사</button>
+              <button class="btn btn--soft" type="button" id="mailQuote">
+                <svg class="icon" aria-hidden="true"><use href="#i-arrow"></use></svg>
+                <span class="btn__label">이메일 앱으로</span>
+              </button>
+              <button class="btn btn--soft" type="button" id="copyQuote">
+                <svg class="icon" aria-hidden="true"><use href="#i-copy"></use></svg>
+                <span class="btn__label">내용 복사</span>
+              </button>
             </div>
-            <p class="quote-form__note">‘메일로 보내기’는 사용 중인 메일 앱을 열어 본문을 채워 둡니다. 메일 앱이 없다면 ‘내용 복사’로 문의 내용을 복사해 전화·팩스로 보내주세요.</p>
+            <p class="quote-form__status" id="quoteStatus" role="status" aria-live="polite"></p>
+            <p class="quote-form__note">‘웹에서 바로 보내기’는 이 페이지에서 바로 접수됩니다. 메일 앱에서 디자인 파일을 첨부해 보내시려면 ‘이메일 앱으로’를, 전화·팩스로 보내시려면 ‘내용 복사’를 눌러 주세요.</p>
           </form>
         </div>
       </div>
@@ -730,7 +747,7 @@
       "name": "견적을 문의할 때 무엇을 알려주면 되나요?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "품목(작업일보·카탈로그·라벨 등), 완성 크기와 페이지 수, 수량, 종이 재질, 후가공(코팅·제본 등), 필요한 납기일을 알려주시면 견적을 바로 낼 수 있습니다. 인쇄할 파일이 있으면 함께 보내주세요. 파일이 없어도 사양만 알려주시면 준비 방법을 안내드리고, 사이트의 견적 문의 양식에 적으시면 그 내용이 그대로 메일로 전달됩니다."
+        "text": "품목(작업일보·카탈로그·라벨 등), 완성 크기와 페이지 수, 수량, 종이 재질, 후가공(코팅·제본 등), 필요한 납기일을 알려주시면 견적을 바로 낼 수 있습니다. 인쇄할 파일이 있으면 함께 보내주세요. 파일이 없어도 사양만 알려주시면 준비 방법을 안내드리고, 사이트의 견적 문의 양식에 적어 바로 보내시면 그 내용이 그대로 접수됩니다."
       }
     }
   ]
