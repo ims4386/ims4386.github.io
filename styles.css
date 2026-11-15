@@ -1227,7 +1227,13 @@ body.nav-open .nav-toggle__close { display: block; }
   .b2b-note .btn { width: 100%; }
   .quote-form__actions .btn { flex: 1 1 auto; }
   .quote-form__actions .btn--primary { flex: 1 1 100%; }
-  .quote-form__actions .btn--soft { flex: 1 1 calc(50% - 5px); }
+  .quote-form__actions .btn--soft {
+    flex: 1 1 calc(50% - 5px);
+    padding: 12px 10px;
+    font-size: 13.5px;
+    gap: 6px;
+  }
+  .quote-form__actions .btn--soft .icon { font-size: 15px; }
   .hero__actions .btn--store { flex: 0 0 auto; }
   .store-note { padding: 24px 22px; }
   .store-note h3 { font-size: 17px; }
