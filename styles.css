@@ -579,21 +579,25 @@ body.nav-open .nav-toggle__close { display: block; }
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 18px;
 }
-/* 10개 품목이 마지막 줄에서 비지 않도록 9·10번은 두 칸씩 */
-.service:nth-child(9),
-.service:nth-child(10) {
+/* 13개 품목 — 마지막 줄이 비지 않도록 간판·현수막·아크릴 가공 3개는 두 칸씩 */
+.service:nth-child(11),
+.service:nth-child(12),
+.service:nth-child(13) {
   grid-column: span 2;
   display: grid;
   grid-template-columns: 48px minmax(0, 1fr);
   column-gap: 20px;
   align-items: start;
 }
-.service:nth-child(9) .service__icon,
-.service:nth-child(10) .service__icon { grid-row: 1 / span 2; margin-bottom: 0; }
-.service:nth-child(9) h3,
-.service:nth-child(10) h3 { grid-column: 2; margin-top: 1px; }
-.service:nth-child(9) p,
-.service:nth-child(10) p { grid-column: 2; }
+.service:nth-child(11) .service__icon,
+.service:nth-child(12) .service__icon,
+.service:nth-child(13) .service__icon { grid-row: 1 / span 2; margin-bottom: 0; }
+.service:nth-child(11) h3,
+.service:nth-child(12) h3,
+.service:nth-child(13) h3 { grid-column: 2; margin-top: 1px; }
+.service:nth-child(11) p,
+.service:nth-child(12) p,
+.service:nth-child(13) p { grid-column: 2; }
 .service {
   position: relative;
   padding: 28px 26px 26px;
@@ -1158,10 +1162,14 @@ body.nav-open .nav-toggle__close { display: block; }
 /* ---------- 14. 반응형 ---------- */
 @media (max-width: 1099px) {
   .services { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .service:nth-child(9),
-  .service:nth-child(10) { grid-column: auto; display: block; }
-  .service:nth-child(9) .service__icon,
-  .service:nth-child(10) .service__icon { margin-bottom: 18px; }
+  .service:nth-child(11),
+  .service:nth-child(12),
+  .service:nth-child(13) { grid-column: auto; display: block; }
+  .service:nth-child(11) .service__icon,
+  .service:nth-child(12) .service__icon,
+  .service:nth-child(13) .service__icon { margin-bottom: 18px; }
+  /* 13개라 마지막 한 칸이 남지 않도록 마지막 품목은 한 줄 전체 */
+  .service:nth-child(13) { grid-column: span 2; }
 }
 
 @media (max-width: 1080px) {
@@ -1239,6 +1247,7 @@ body.nav-open .nav-toggle__close { display: block; }
   .store-note h3 { font-size: 17px; }
   .services { grid-template-columns: 1fr; }
   .service { padding: 24px 22px; }
+  .service:nth-child(13) { grid-column: auto; }
   .faq-list { grid-template-columns: 1fr; gap: 14px; }
   .faq-item { padding: 22px 22px 20px; }
   .faq-item__q { font-size: 15.5px; }
