@@ -138,6 +138,139 @@
     });
   });
 
+  /* ---------- 납품실적: 품목 필터 · 확대 보기 ---------- */
+  var worksGrid = document.getElementById('worksGrid');
+  if (worksGrid) {
+    var workCards = Array.prototype.slice.call(worksGrid.querySelectorAll('.work-card'));
+    var filterBtns = Array.prototype.slice.call(document.querySelectorAll('.works__filter'));
+    var worksEmpty = document.getElementById('worksEmpty');
+
+    function cardPhoto(card) {
+      return card ? card.querySelector('.work-card__media img') : null;
+    }
+
+    function photoCards() {
+      return workCards.filter(function (card) { return !!cardPhoto(card); });
+    }
+
+    // 사진이 들어간 카드만 키보드로 열 수 있게 한다
+    workCards.forEach(function (card) {
+      if (!cardPhoto(card)) return;
+      var title = card.querySelector('h3');
+      card.classList.add('is-zoomable');
+      card.setAttribute('tabindex', '0');
+      card.setAttribute('role', 'button');
+      if (title) card.setAttribute('aria-label', title.textContent + ' 사진 크게 보기');
+    });
+
+    function applyFilter(filter) {
+      var shown = 0;
+      workCards.forEach(function (card) {
+        var match = filter === 'all' || card.getAttribute('data-category') === filter;
+        card.hidden = !match;
+        if (match) shown++;
+      });
+      filterBtns.forEach(function (btn) {
+        var on = btn.getAttribute('data-filter') === filter;
+        btn.classList.toggle('is-active', on);
+        btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+      });
+      if (worksEmpty) worksEmpty.hidden = shown > 0;
+    }
+
+    filterBtns.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        applyFilter(btn.getAttribute('data-filter') || 'all');
+      });
+    });
+
+    var lightbox = document.getElementById('lightbox');
+    var lbImg = document.getElementById('lbImage');
+    var lbCaption = document.getElementById('lbCaption');
+    var lbCount = document.getElementById('lbCount');
+    var lbClose = document.getElementById('lbClose');
+    var lbPrev = document.getElementById('lbPrev');
+    var lbNext = document.getElementById('lbNext');
+    var lbIndex = 0;
+    var lastFocused = null;
+
+    function openLightbox(index) {
+      var list = photoCards();
+      if (!list.length || !lightbox) return;
+      lbIndex = Math.max(0, Math.min(index, list.length - 1));
+      var card = list[lbIndex];
+      var img = cardPhoto(card);
+      var title = card.querySelector('h3');
+      if (lbImg && img) {
+        lbImg.src = img.getAttribute('src');
+        lbImg.alt = img.getAttribute('alt') || (title ? title.textContent : '납품실적 사진');
+      }
+      if (lbCaption) lbCaption.textContent = title ? title.textContent : '';
+      if (lbCount) lbCount.textContent = list.length > 1 ? (lbIndex + 1) + ' / ' + list.length : '';
+      if (lbPrev) lbPrev.hidden = list.length < 2;
+      if (lbNext) lbNext.hidden = list.length < 2;
+      lastFocused = document.activeElement;
+      lightbox.classList.add('is-open');
+      lightbox.setAttribute('aria-hidden', 'false');
+      document.body.classList.add('is-locked');
+      if (lbClose) lbClose.focus();
+    }
+
+    function closeLightbox() {
+      if (!lightbox) return;
+      lightbox.classList.remove('is-open');
+      lightbox.setAttribute('aria-hidden', 'true');
+      document.body.classList.remove('is-locked');
+      if (lbImg) lbImg.removeAttribute('src');
+      if (lastFocused && lastFocused.focus) lastFocused.focus();
+      lastFocused = null;
+    }
+
+    function stepLightbox(dir) {
+      var list = photoCards();
+      if (list.length < 2) return;
+      openLightbox((lbIndex + dir + list.length) % list.length);
+    }
+
+    worksGrid.addEventListener('click', function (e) {
+      var card = e.target.closest('.work-card');
+      if (!card) return;
+      var idx = photoCards().indexOf(card);
+      if (idx === -1) {
+        toast('사진이 등록되면 눌러서 크게 보실 수 있습니다.');
+        return;
+      }
+      openLightbox(idx);
+    });
+
+    worksGrid.addEventListener('keydown', function (e) {
+      if (e.key !== 'Enter' && e.key !== ' ' && e.key !== 'Spacebar') return;
+      var card = e.target.closest('.work-card');
+      if (!card) return;
+      var idx = photoCards().indexOf(card);
+      if (idx === -1) return;
+      e.preventDefault();
+      openLightbox(idx);
+    });
+
+    if (lightbox) {
+      if (lbClose) lbClose.addEventListener('click', closeLightbox);
+      if (lbPrev) lbPrev.addEventListener('click', function () { stepLightbox(-1); });
+      if (lbNext) lbNext.addEventListener('click', function () { stepLightbox(1); });
+      lightbox.addEventListener('click', function (e) {
+        if (e.target === lightbox) closeLightbox();
+      });
+      document.addEventListener('keydown', function (e) {
+        if (!lightbox.classList.contains('is-open')) return;
+        if (e.key === 'Escape') { closeLightbox(); return; }
+        if (e.key === 'ArrowRight') stepLightbox(1);
+        else if (e.key === 'ArrowLeft') stepLightbox(-1);
+      });
+    }
+
+    applyFilter('all');
+  }
+
   /* ---------- 연도 ---------- */
   var year = document.getElementById('year');
   if (year) year.textContent = String(new Date().getFullYear());

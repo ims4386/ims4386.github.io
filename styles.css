@@ -1,7 +1,7 @@
 /* =========================================================
    아이엠에스(IMS) — 1차 시안 스타일시트
    구성: 기본 설정 → 헤더 → 히어로 → 회사소개 → 취급품목
-        → 진행절차 → 견적문의 → 오시는 길 → 푸터 → 반응형
+        → 납품실적 → 진행절차 → 견적문의 → 오시는 길 → 푸터 → 반응형
    ========================================================= */
 
 /* ---------- 1. 기본 설정 ---------- */
@@ -685,6 +685,149 @@ body.nav-open .nav-toggle__close { display: block; }
 .store-note p { font-size: 14.5px; line-height: 1.7; max-width: 62em; color: var(--body); }
 .store-note__btn { flex: none; }
 
+/* ---------- 7-1. 납품실적 ---------- */
+.works__toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin: -14px 0 28px;
+}
+.works__filters { display: flex; flex-wrap: wrap; gap: 8px; }
+.works__filter {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 18px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: #fff;
+  color: #3A4160;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: -.01em;
+  white-space: nowrap;
+  transition: color .18s, background-color .18s, border-color .18s, box-shadow .18s;
+}
+.works__filter:hover { color: var(--navy); border-color: rgba(20, 28, 100, .3); }
+.works__filter.is-active {
+  background: var(--navy);
+  border-color: var(--navy);
+  color: #fff;
+  box-shadow: 0 6px 16px rgba(20, 28, 100, .18);
+}
+
+.works {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+}
+.work-card {
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  transition: transform .22s var(--ease), box-shadow .22s var(--ease), border-color .22s;
+}
+.work-card[hidden] { display: none; }
+.work-card:hover {
+  transform: translateY(-4px);
+  border-color: #D8DDF0;
+  box-shadow: var(--shadow);
+}
+.work-card.is-zoomable { cursor: zoom-in; }
+.work-card__media {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 1px solid var(--line-2);
+  background:
+    radial-gradient(120% 90% at 50% 0%, #FFFFFF 0%, #F4F6FD 55%, #E9ECF8 100%);
+  overflow: hidden;
+}
+.work-card__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform .45s var(--ease);
+}
+.work-card:hover .work-card__media img { transform: scale(1.04); }
+.work-card__ph {
+  position: absolute;
+  inset: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 12px;
+  border: 1.5px dashed #D3D9EE;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, .55);
+  text-align: center;
+  color: var(--navy);
+}
+.work-card__ph .icon {
+  font-size: 32px;
+  stroke-width: 1.5;
+  opacity: .82;
+}
+.work-card__ph-text {
+  font-size: 12.5px;
+  font-weight: 600;
+  line-height: 1.5;
+  letter-spacing: -.01em;
+  color: var(--muted);
+}
+.work-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 20px 22px 22px;
+}
+.work-card__cat {
+  font-size: 11.5px;
+  font-weight: 800;
+  letter-spacing: .06em;
+  color: var(--green-d);
+}
+.work-card h3 { font-size: 18px; letter-spacing: -.02em; }
+.work-card p { font-size: 14px; line-height: 1.72; }
+
+.works__empty {
+  margin-top: 22px;
+  padding: 30px 24px;
+  border: 1px dashed var(--line);
+  border-radius: var(--radius);
+  background: #FBFCFE;
+  text-align: center;
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--muted);
+}
+.works__empty[hidden] { display: none; }
+
+.works__cta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 28px;
+  margin-top: 28px;
+  padding: 28px 34px;
+  border: 1px solid #E1E6F5;
+  border-radius: var(--radius);
+  background: linear-gradient(120deg, #F6F8FD, #ECF0FA);
+}
+.works__cta-text { min-width: 0; }
+.works__cta h3 { font-size: 18px; margin-bottom: 5px; letter-spacing: -.02em; }
+.works__cta p { font-size: 14.5px; line-height: 1.7; max-width: 56em; }
+.works__cta .btn { flex: none; }
+
 /* ---------- 8. 진행절차 ---------- */
 .steps {
   display: grid;
@@ -1128,6 +1271,78 @@ body.nav-open .nav-toggle__close { display: block; }
 .footer-top .icon { font-size: 15px; transform: rotate(-90deg); }
 .footer-top:hover { color: #fff; }
 
+/* ---------- 11-1. 납품실적 확대 보기 (라이트박스) ---------- */
+body.is-locked { overflow: hidden; }
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 400;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 72px 84px;
+  background: rgba(9, 13, 42, .9);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity .24s var(--ease), visibility .24s var(--ease);
+}
+.lightbox.is-open { opacity: 1; visibility: visible; }
+.lightbox__figure {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  max-width: min(1080px, 100%);
+  max-height: 100%;
+}
+.lightbox__img {
+  max-width: 100%;
+  max-height: calc(100vh - 180px);
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: var(--shadow-lg);
+}
+.lightbox__cap {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-size: 14.5px;
+  font-weight: 600;
+  line-height: 1.6;
+  color: #DCDFF0;
+  text-align: center;
+}
+.lightbox__cap > span:empty { display: none; }
+.lightbox__count {
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  color: #9AA1C4;
+}
+.lightbox__btn {
+  position: absolute;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, .22);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .1);
+  color: #fff;
+  transition: background-color .18s, border-color .18s;
+}
+.lightbox__btn:hover { background: rgba(255, 255, 255, .22); border-color: rgba(255, 255, 255, .42); }
+.lightbox__btn .icon { font-size: 20px; }
+.lightbox__close { top: 20px; right: 20px; }
+.lightbox__prev { left: 20px; top: 50%; transform: translateY(-50%) rotate(180deg); }
+.lightbox__next { right: 20px; top: 50%; transform: translateY(-50%); }
+.lightbox__btn:focus-visible { outline-color: #8FE0A2; }
+
 /* ---------- 12. 토스트 ---------- */
 .toast {
   position: fixed;
@@ -1175,6 +1390,9 @@ body.nav-open .nav-toggle__close { display: block; }
   .location-grid { grid-template-columns: 1fr; }
   .map-frame, .map-frame iframe { min-height: 320px; }
   .footer-inner { grid-template-columns: 1fr 1fr; gap: 32px; }
+  /* 메뉴가 7개로 늘어 줄어든 폭을 맞춘다 */
+  .brand__tagline { display: none; }
+  .nav__list a { padding: 9px 11px; font-size: 14.5px; }
 }
 
 @media (max-width: 900px) {
@@ -1204,6 +1422,9 @@ body.nav-open .nav-toggle__close { display: block; }
   .b2b-note { flex-direction: column; align-items: flex-start; gap: 20px; padding: 28px 26px; }
   .store-note { flex-direction: column; align-items: flex-start; gap: 16px; padding: 26px 26px; }
   .store-note__btn { width: 100%; }
+  .works { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+  .works__cta { flex-direction: column; align-items: flex-start; gap: 18px; padding: 26px 26px; }
+  .works__cta .btn { width: 100%; }
 }
 
 @media (max-width: 720px) {
@@ -1255,6 +1476,18 @@ body.nav-open .nav-toggle__close { display: block; }
   .faq-item { padding: 22px 22px 20px; }
   .faq-item__q { font-size: 15.5px; }
   .faq-item__a { padding-left: 0; margin-top: 10px; font-size: 14px; }
+  .works { grid-template-columns: 1fr; }
+  .works__toolbar { margin: -4px 0 20px; }
+  .works__filters { gap: 7px; }
+  .works__filter { padding: 8px 14px; font-size: 13.5px; }
+  .work-card__body { padding: 18px 20px 20px; }
+  .work-card__ph .icon { font-size: 28px; }
+  .lightbox { padding: 64px 16px 96px; }
+  .lightbox__close { top: 12px; right: 12px; }
+  .lightbox__nav { top: auto; bottom: 18px; }
+  .lightbox__prev { left: calc(50% - 58px); transform: rotate(180deg); }
+  .lightbox__next { right: calc(50% - 58px); transform: none; }
+  .lightbox__img { max-height: calc(100vh - 210px); }
 }
 
 @media (max-width: 560px) {
@@ -1284,7 +1517,7 @@ body.nav-open .nav-toggle__close { display: block; }
 
 @media print {
   .site-header, .nav-toggle, .hero__visual, .b2b-note .btn,
-  .store-note__btn,
+  .store-note__btn, .works__toolbar, .works__cta .btn, .lightbox,
   .map-frame, .quote-form__actions, .footer-top, .skip-link { display: none !important; }
   body { color: #000; }
   .section, .hero { padding: 24px 0; }
